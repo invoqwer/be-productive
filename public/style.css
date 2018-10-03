@@ -22,13 +22,13 @@ body {
   width: 70%;
 }
 
-#clock {
-  background: #3498db;
-}
-
 .wrapper {
   text-align: center;
   padding: 0.5em;
+}
+
+#clock {
+  background: #3498db;
 }
 
 #date {
@@ -39,4 +39,19 @@ body {
 #time {
   font-size: 6em;
   font-weight: bold;
+}
+
+#elapsed {
+  display: flex;
+  font-size: 2em;
+}
+
+#started {
+  width: 50%;
+  background: #f39c12;
+}
+
+#current {
+  width: 50%;
+  background: #e74c3c;
 }

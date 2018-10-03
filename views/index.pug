@@ -14,11 +14,37 @@ html
               | loading...
             #time.wrapper
               | loading...
+          #elapsed
+            #started.wrapper
+            #current.wrapper
     script.
+      let now, started, diff;
+      let isRecording = false;
+      
       function update() {
-        const now = moment()
+        now = moment()
         $('#date').html(now.format('dddd MMM.M, YYYY'));
-        $('#time').html(now.format('h:mm:ss'));
-         
+        $('#time').html(now.format('h:mm A'));
+        if (isRecording) {
+          $('#started').html(started.format('h:mm:ss'));
+          diff = moment.duration(now.diff(started))
+          $('#current').html(Math.floor(diff.asMinutes()) 
+          + 'm ' + Math.round(diff.asSeconds()) + 's');
+        }
       }
+
+      $(document).on("keypress", function (e) {
+          // spacebar
+          if (e.which === 32) {
+            isRecording = true;
+            started = now;
+          }
+          // enter
+          if (e.which === 13) {
+            isRecording = false;
+            $('#started').html('');
+            $('#current').html(''); 
+          }
+      });
+
       setInterval(update, 1000);
