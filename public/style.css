@@ -1,0 +1,42 @@
+body {
+  background: #ecf0f1;
+  color: #2c3e50;
+  font-family: 'Space Mono', monospace;
+}
+
+.outer {
+  display: table;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.middle {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.inner {
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
+}
+
+#clock {
+  background: #3498db;
+}
+
+.wrapper {
+  text-align: center;
+  padding: 0.5em;
+}
+
+#date {
+  font-size: 1em;
+  background: #2980b9;
+}
+
+#time {
+  font-size: 6em;
+  font-weight: bold;
+}

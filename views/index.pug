@@ -1,0 +1,24 @@
+html
+  head
+    title Be Productive
+    link(rel='stylesheet', href='style.css')
+    link(href='https://fonts.googleapis.com/css?family=Space+Mono' rel='stylesheet')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js')
+    script(src='https://code.jquery.com/jquery-3.3.1.min.js' integrity='sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=' crossorigin='anonymous')
+  body
+    .outer
+      .middle
+        .inner
+          #clock
+            #date.wrapper
+              | loading...
+            #time.wrapper
+              | loading...
+    script.
+      function update() {
+        const now = moment()
+        $('#date').html(now.format('dddd MMM.M, YYYY'));
+        $('#time').html(now.format('h:mm:ss'));
+         
+      }
+      setInterval(update, 1000);
