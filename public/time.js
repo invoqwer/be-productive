@@ -206,9 +206,18 @@ function aggregateDeltas(intervals) {
   });
 }
 
+function parseLocalStorage() {
+  let start = storage.getItem('start');
+  let isRecording = storage.getItem('isRecording');
+  start = start ? new Date(start) : null;
+  isRecording = (isRecording === 'true') ? true : false;
+  return [start, isRecording];
+}
+
 // CONTROLLER
-let now, start, currDelta;
-let isRecording = false;
+const storage = window.localStorage;
+let now, delta;
+let [start, isRecording] = parseLocalStorage();
 
 function updateView() {
   now = new Date();
@@ -219,9 +228,9 @@ function updateView() {
   document.getElementById('time').innerText = time;
   
   if (isRecording) {
-    currDelta = getDelta(start, now);
+    delta = getDelta(start, now);
     document.getElementById('start-time').innerHTML = formatTime(start);
-    document.getElementById('current-time').innerHTML = formatDelta(currDelta);
+    document.getElementById('current-time').innerHTML = formatDelta(delta);
   }
 }
 setInterval(updateView, 1000);
@@ -230,6 +239,8 @@ function startRecording() {
   if (!isRecording && now) {
     log('Start recording');
     isRecording = true, start = now;
+    storage.setItem('isRecording', true);
+    storage.setItem('start', now);
   }
 }
 
@@ -239,22 +250,26 @@ function cancelRecording() {
 
     document.getElementById('start-time').innerHTML = '';
     document.getElementById('current-time').innerHTML = '';
-    isRecording = false, start = null, currDelta = null;
+    isRecording = false, start = null;
+    storage.setItem('isRecording', false);
+    storage.setItem('start', null);
   }
 }
 
 function endRecording() {
-  if (isRecording && start && now && currDelta) {
+  if (isRecording && start && now && delta) {
     log('End recording');
 
     addInterval({
       date: formatDate(now),
-      interval: [start, now, currDelta]
+      interval: [start, now, delta]
     });
 
     document.getElementById('start-time').innerHTML = '';
     document.getElementById('current-time').innerHTML = '';
-    isRecording = false, start = null, currDelta = null;
+    isRecording = false, start = null;
+    storage.setItem('isRecording', false);
+    storage.setItem('start', null);
   }
 }
 
