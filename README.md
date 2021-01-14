@@ -1,3 +1,10 @@
 # Be Productive
+- Time interval tracking utility.
+- space = start, c = cancel, enter = end
 
-Time is the most valuable resource - spend it wisely.
+## Setup
+- `npm install`
+- `node index.js`
+
+## TODO
+- media queries / responsiveness

@@ -1,24 +1,28 @@
 body {
-  background: #ecf0f1;
-  color: #2c3e50;
+  background: #1B1464;
+  color: #000000;
   font-family: 'Space Mono', monospace;
 }
 
-.outer {
-  display: table;
-  position: absolute;
-  height: 100%;
+#controls {
+  overflow: hidden;
+  position: fixed;
+  top: 0;
   width: 100%;
 }
 
-.middle {
-  display: table-cell;
-  vertical-align: middle;
+#delete {
+  text-align: center;
+  font-size: 2.5vw;
+  float: right;
+  height: 4vw;
+  width: 4vw;
+  background-color: #eb2f06;
 }
 
-.inner {
-  margin-left: auto;
-  margin-right: auto;
+#clock-wrapper {
+  border: 2px solid #2c3e50;
+  margin: 10vh auto;
   width: 70%;
 }
 
@@ -28,12 +32,12 @@ body {
 }
 
 #clock {
-  background: #3498db;
+  background: #0652dd;
 }
 
 #date {
-  font-size: 1em;
-  background: #2980b9;
+  font-size: 1.5em;
+  background: #0540ab;
 }
 
 #time {
@@ -42,16 +46,59 @@ body {
 }
 
 #elapsed {
-  display: flex;
   font-size: 2em;
+  display: flex;
+  flex-wrap: wrap;
 }
 
-#started {
-  width: 50%;
-  background: #f39c12;
+#elapsed>* {
+  flex: 1 1 auto;
 }
 
-#current {
-  width: 50%;
-  background: #e74c3c;
+#start-time {
+  background: #ffa502;
+}
+
+#current-time {
+  background: #eb2f06;
+}
+
+#timelog-wrapper {
+  margin: 10vh auto;
+  width: 70%;
+}
+
+.day {
+  background-color:#70a1ff;
+  text-align: center;
+  margin-bottom: 5vh;
+}
+
+.logHeader {
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 1vh;
+  border-bottom: 2px solid #2c3e50;
+}
+
+.log-entry {
+  font-size: 1.3em;
+  height: 5vh;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 2px solid #2c3e50;
+}
+
+.log-entry>* {
+  flex: 1 1 auto;
+}
+
+.aggregate {
+  background-color: #1ABC9C;
+}
+
+.accent {
+  color: #eb2f06;
 }
