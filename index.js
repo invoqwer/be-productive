@@ -1,14 +1,16 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const path = require('path');
+
 app.set('view engine', 'pug');
-app.set('views', './views');
-app.use(express.static(__dirname + '/public'));
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 const log = console.log;
 const port = process.env.port || 3000;
-const timelogPath = 'timelog.json';
+const timelogPath = path.join(__dirname, 'timelog.json');
 
 function getTimelog() {
   // create an empty timelog, if no file exists
@@ -34,7 +36,7 @@ app.post('/timelog', (req, res) => {
   } else {
     timelog[date].push(interval);
   }
-  fs.writeFileSync(timelogPath, JSON.stringify(timelog)); 
+  fs.writeFileSync(timelogPath, JSON.stringify(timelog, null, 4));
   res.json(timelog);
 });
 
