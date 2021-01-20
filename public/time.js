@@ -151,14 +151,21 @@ function populateFromJSON(data) {
     dayHeader.innerText = date;
     day.appendChild(dayHeader);
 
+    let deltas = [];
+
     intervals.forEach(interval => {
-      const [start, end, delta] = interval;
+      const start = new Date(interval[0]);
+      const end = new Date(interval[1]);
+      const delta = getDelta(start, end);
+      deltas.push(delta);
+
       let left = document.createElement('div');
       let middle = document.createElement('div');
       let right = document.createElement('div');
       right.classList.add('accent');
-      left.innerText = formatTime(new Date(start), true);
-      middle.innerText = formatTime(new Date(end), true);
+
+      left.innerText = formatTime(start, true);
+      middle.innerText = formatTime(end, true);
       right.innerText = formatDelta(delta);
 
       let entry = document.createElement('div');
@@ -173,7 +180,6 @@ function populateFromJSON(data) {
     let aggregate = document.createElement('div');
     aggregate.classList.add('logHeader', 'aggregate');
 
-    const deltas = intervals.map(i => { return i[2]; });
     aggregate.innerText = `Total: ${formatDelta(aggregateDeltas(deltas))}`;
     day.appendChild(aggregate);
 
@@ -199,9 +205,9 @@ function clearTimelog() {
   })
 }
 
-// [ [start,end,aggregate], ... ]
-function aggregateDeltas(intervals) {
-  return intervals.reduce((acc, e) => {
+// [ [XX,XX,XX], ... ]
+function aggregateDeltas(deltas) {
+  return deltas.reduce((acc, e) => {
     return [acc[0] + e[0], acc[1] + e[1], acc[2] + e[2]]; 
   });
 }
@@ -257,12 +263,12 @@ function cancelRecording() {
 }
 
 function endRecording() {
-  if (isRecording && start && now && delta) {
+  if (isRecording && start && now) {
     log('End recording');
 
     addInterval({
       date: formatDate(now),
-      interval: [start, now, delta]
+      interval: [start, now]
     });
 
     document.getElementById('start-time').innerHTML = '';

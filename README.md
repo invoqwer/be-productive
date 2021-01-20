@@ -9,3 +9,5 @@
 
 ## TODO
 - media queries / responsiveness
+- editable descriptions for each time interval
+- separate js into modules (http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html)
