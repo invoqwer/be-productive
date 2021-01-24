@@ -20,6 +20,7 @@ function getTimelog() {
   return JSON.parse(fs.readFileSync(timelogPath));
 }
 
+// routes
 app.get('/', (_, res) => {
   res.render('index');
 });

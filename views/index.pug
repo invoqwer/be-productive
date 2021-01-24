@@ -3,10 +3,12 @@ html
     title Be Productive
     link(rel='stylesheet', href='style.css')
     link(href='https://fonts.googleapis.com/css?family=Space+Mono' rel='stylesheet')
-    script(src='time.js')
+    script(src='scripts/controller.js' type='module')
+    script(src='scripts/time.js' type='module')
+    script(src='scripts/timelog.js' type='module')
   body
     #controls
-      #delete(onclick='clearTimelog()') X
+      #delete X
     #clock-wrapper
       #clock
         #date.wrapper loading...
