@@ -1,3 +1,5 @@
+// TODO: how to import?
+
 // import {
 //   getDelta, formatDelta, aggregateDeltas,formatDate, formatTime
 // } from '../public/scripts/time.js';
@@ -50,8 +52,6 @@ function formatDelta(delta) {
     `${hours}h ${zeroPad(minutes)}m ${zeroPad(seconds)}s`;
 }
 
-// TODO: tests for aggregatedelta
-
 // TESTING
 (() => {
   // let here = new Date();
@@ -67,9 +67,30 @@ function formatDelta(delta) {
   //   log(d0, d1);
   // });
 
-  const now = new Date(2020, 1, 1, 12, 15, 20, 30);
-  const then = new Date(2019, 1, 1, 12, 15, 20, 30);
-  const delta = getDelta(now, then);
-  log(delta);
-  log(formatDelta(delta));
+  // 3h 52m 28s
+  let now = new Date(2020, 1, 1, 3, 52, 28, 0);
+  let then = new Date(2019, 1, 1, 0, 0, 0, 0);
+  const delta1 = getDelta(now, then);
+  log(delta1);
+  log(formatDelta(delta1));
+
+  // 8h 37m 46s
+  now = new Date(2020, 1, 1, 8, 37, 46, 0);
+  then = new Date(2019, 1, 1, 0, 0, 0, 0);
+  const delta2 = getDelta(now, then);
+  log(delta2);
+  log(formatDelta(delta2));
+
+  // 9h 43m 59s
+  now = new Date(2020, 1, 1, 9, 43, 59, 0);
+  then = new Date(2019, 1, 1, 0, 0, 0, 0);
+  const delta3 = getDelta(now, then);
+  log(delta3);
+  log(formatDelta(delta3));
+
+  // 20h, 132m, 133s
+  // 22h, 14m, 13s
+  const ad = [delta1, delta2, delta3]
+  log(aggregateDeltas(ad));
+  log(formatDelta(aggregateDeltas(ad)));
 })();

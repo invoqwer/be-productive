@@ -14,3 +14,4 @@
 - colours / bg options
 - top navbar
 - confirmation modals (for delete, cancel)
+- clean up hacky modal logic

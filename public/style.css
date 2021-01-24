@@ -1,7 +1,47 @@
 body {
-  background: #1B1464;
+  background: #100c3a;
   color: #000000;
   font-family: 'Space Mono', monospace;
+}
+
+#overlay {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.7);
+  z-index: 2;
+}
+
+#modal {
+  border: 2px solid #2c3e50;
+  font-size: 2em;
+  background-color: #0549c4;
+  margin: 25vh auto 0;
+  z-index: 3;
+  width: 40%;
+}
+
+#buttons {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#buttons>* {
+  flex: 1 1 auto;
+  cursor: pointer;
+}
+
+#cancel {
+  background-color: #eb2f06;
+}
+
+#accept {
+  background-color: #3498db;
 }
 
 #controls {
@@ -18,11 +58,12 @@ body {
   height: 4vw;
   width: 4vw;
   background-color: #eb2f06;
+  cursor: pointer;
 }
 
 #clock-wrapper {
   border: 2px solid #2c3e50;
-  margin: 10vh auto;
+  margin: 15vh auto;
   width: 70%;
 }
 
@@ -32,12 +73,12 @@ body {
 }
 
 #clock {
-  background: #0652dd;
+  background: #0549c4;
 }
 
 #date {
   font-size: 1.5em;
-  background: #0540ab;
+  background: #043693;
 }
 
 #time {
@@ -56,11 +97,11 @@ body {
 }
 
 #start-time {
-  background: #ffa502;
+  background: #ce8500;
 }
 
 #current-time {
-  background: #eb2f06;
+  background: #b92505;
 }
 
 #timelog-wrapper {
@@ -69,7 +110,7 @@ body {
 }
 
 .day {
-  background-color:#70a1ff;
+  background-color:#3498db;
   text-align: center;
   margin-bottom: 5vh;
 }
@@ -96,9 +137,9 @@ body {
 }
 
 .aggregate {
-  background-color: #1ABC9C;
+  background-color:#019875;
 }
 
 .accent {
-  color: #eb2f06;
+  color: #b92505;
 }

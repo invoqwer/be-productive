@@ -23,6 +23,7 @@ function addIntervalToTimelog(interval) {
 
 function clearTimelog() {
   log('Clearing timelog');
+  storage.removeItem('target');
   deleteTimelog().then(res => {
     populateTimelog(res);
   })
@@ -81,6 +82,12 @@ function populateTimelog(data) {
   }
 }
 
+function clearLocalStorage() {
+  storage.removeItem('start');
+  storage.removeItem('isRecording');
+  storage.removeItem('target');
+}
+
 // Update Time + Local Storage
 function parseLocalStorage() {
   let start = storage.getItem('start');
@@ -91,8 +98,10 @@ function parseLocalStorage() {
 }
 
 const storage = window.localStorage;
+// clearLocalStorage();
 let now, delta;
 let [start, isRecording] = parseLocalStorage();
+storage.removeItem('target');
 
 function updateView() {
   now = new Date();
@@ -128,7 +137,7 @@ function cancelRecording() {
     document.getElementById('current-time').innerHTML = '';
     isRecording = false, start = null;
     storage.setItem('isRecording', false);
-    storage.setItem('start', null);
+    storage.removeItem('start');
   }
 }
 
@@ -145,25 +154,69 @@ function endRecording() {
     document.getElementById('current-time').innerHTML = '';
     isRecording = false, start = null;
     storage.setItem('isRecording', false);
-    storage.setItem('start', null);
+    storage.removeItem('start');
   }
 }
 
-// Event Listeners
+// Event listeners
+// Key Press
 document.addEventListener('keypress', handleKeypress);
 function handleKeypress(e) {
+  // log(e.keyCode);
   switch(e.keyCode) {
     // s - start
-    case 83: startRecording(); break;
-    // c - cancel 
-    case 99: cancelRecording(); break;
-    // enter - end      
-    case 13: endRecording(); break;      
+    case 115: startRecording(); break;
+    // c - cancel
+    case 99:
+      if (isModal()) {
+        hideModal();
+      } else if (isRecording) {
+        showModal('cancel');
+      }
+      break;
+    // enter - end
+    case 13:
+      if (isModal()) {
+        acceptModal();
+      } else {
+        endRecording();
+      }
+      break;
   }
 }
 
-document.getElementById('delete').addEventListener('click', function() {
-  clearTimelog();
+// Modals
+function isModal() {
+  return document.getElementById('overlay').style.display === "block";
+}
+
+function showModal(id) {
+  storage.setItem('target', id);
+  document.getElementById('overlay').style.display = "block";
+}
+
+function hideModal() {
+  document.getElementById('overlay').style.display = "none";
+  storage.removeItem('target');
+}
+
+function acceptModal() {
+  switch(storage.getItem('target')) {
+    case 'delete': clearTimelog(); break;
+    case 'cancel': cancelRecording(); break;
+    default: log('Error accepting modal'); break;
+  }
+  hideModal();
+}
+
+document.getElementById('cancel').addEventListener('click', function() {
+  hideModal();
 });
 
+document.getElementById('accept').addEventListener('click', function() {
+  acceptModal();
+});
 
+document.getElementById('delete').addEventListener('click', function() {
+  showModal('delete');
+});
