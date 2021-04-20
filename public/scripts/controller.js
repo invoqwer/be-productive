@@ -220,3 +220,16 @@ document.getElementById('accept').addEventListener('click', function() {
 document.getElementById('delete').addEventListener('click', function() {
   showModal('delete');
 });
+
+// different colors based on window focus
+function setStyle(sheet) {
+  document.getElementById('colors').setAttribute('href', sheet);  
+}
+
+document.body.addEventListener('mouseleave', _ => {
+  setStyle('styles/colors-inactive.css');
+});
+
+document.body.addEventListener('mouseenter', _ => {
+  setStyle('styles/colors-active.css');
+});

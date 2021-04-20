@@ -1,0 +1,17 @@
+:root {
+  --font-color: #63758f;
+  --bg-color: #090a0a;
+  --overlay-color: rgba(0,0,0,0.7);
+  --border-color: #252b35;
+  --modal-color: #0549c4;
+  --cancel-color: #eb2f06;
+  --accept-color: #3498db;
+  --delete-color: #0d0a2b;
+  --clock-color: #070517;
+  --date-color: #0d0a2b;
+  --start-time-color: #252b35;
+  --current-time-color: #151717;
+  --day-color: #151717;
+  --aggregate-color: #252b35;
+  --accent-color: #ee5a24;
+}
