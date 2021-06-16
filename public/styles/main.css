@@ -63,7 +63,7 @@ body {
 
 #clock-wrapper {
   border: 2px solid var(--border-color);
-  margin: 15vh auto;
+  margin: 10vh auto;
   width: 70%;
 }
 
