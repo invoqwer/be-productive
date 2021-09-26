@@ -1,5 +1,5 @@
 import {
-  getDelta, formatDelta, aggregateDeltas,formatDate, formatTime
+  getDelta, formatDelta, aggregateDeltas, formatDate, formatTime
 } from './time.js';
 
 import {
@@ -35,6 +35,8 @@ function populateTimelog(data) {
   const tl = document.getElementById('timelog-wrapper');
   tl.innerHTML = '';
 
+  let deltas = [];
+
   for (const [date, intervals] of Object.entries(data)) {
     let day = document.createElement('div');
     day.classList.add('day');
@@ -44,13 +46,37 @@ function populateTimelog(data) {
     dayHeader.innerText = date;
     day.appendChild(dayHeader);
 
-    let deltas = [];
+    let dateClass = date.replace(/\s/g, '-');
+    let dayAddIntervalWrapper = document.createElement('div');
+    dayAddIntervalWrapper.classList.add('log-entry', 'dayAddIntervalWrapper', dateClass);
+    let addStartInterval = document.createElement('input');
+    let addEndInterval = document.createElement('input');
+    let submitInterval = document.createElement('input');
+    submitInterval.style.type = 'submit';
+    submitInterval.addEventListener('submit', function() {
+      log('asdf');
+    });
+    dayAddIntervalWrapper.appendChild(addStartInterval);
+    dayAddIntervalWrapper.appendChild(addEndInterval);
+    dayAddIntervalWrapper.appendChild(submitInterval);
+    day.appendChild(dayAddIntervalWrapper);
+
+    let showAddInterval = document.createElement('div');
+    showAddInterval.classList.add('logHeader');
+    showAddInterval.innerText = '+';
+    showAddInterval.addEventListener('click', function() {
+      const dayAddIntervalWrapper = document.getElementsByClassName(dateClass);
+      dayAddIntervalWrapper[0].style.display = 'block';
+    });
+    // day.appendChild(showAddInterval);
+
+    let dayDeltas = [];
 
     intervals.forEach(interval => {
-      const start = new Date(interval[0]);
-      const end = new Date(interval[1]);
+      const [start, end] =
+        [new Date(interval[0]), new Date(interval[1])];
       const delta = getDelta(start, end);
-      deltas.push(delta);
+      dayDeltas.push(delta);
 
       let left = document.createElement('div');
       let middle = document.createElement('div');
@@ -70,15 +96,30 @@ function populateTimelog(data) {
       day.appendChild(entry);
     });
 
+    // total time across all intervals for the day
+    let dayAggregate = document.createElement('div');
+    dayAggregate.classList.add('logHeader', 'dayAggregate');
+
+    let dayAggregateDelta = aggregateDeltas(dayDeltas);
+    deltas.push(dayAggregateDelta);
+    dayAggregate.innerText = `Day: ${
+      formatDelta(dayAggregateDelta)
+    }`;
+    day.appendChild(dayAggregate);
+
+    tl.appendChild(day);
+  }
+
+  // total time across all days
+  if (Object.keys(data).length > 0) {
     let aggregate = document.createElement('div');
     aggregate.classList.add('logHeader', 'aggregate');
 
     aggregate.innerText = `Total: ${
       formatDelta(aggregateDeltas(deltas))
     }`;
-    day.appendChild(aggregate);
 
-    tl.appendChild(day);
+    tl.appendChild(aggregate);
   }
 }
 

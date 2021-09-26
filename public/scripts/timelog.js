@@ -2,8 +2,8 @@
 function getTimelog() {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest(); 
-    xhr.open('GET', '/timelog', true); 
-    xhr.onload = () => { 
+    xhr.open('GET', '/timelog', true);
+    xhr.onload = () => {
       if (xhr.status < 200 || xhr.status >= 300) {
         reject(xhr);
       } else {
@@ -13,13 +13,14 @@ function getTimelog() {
     xhr.send(); 
   });
 }
-  
+
+// data format: see formatDate(<Date Object>)
 function updateTimelog(data) {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest(); 
-    xhr.open('POST', '/timelog', true); 
+    xhr.open('POST', '/timelog', true);
     xhr.setRequestHeader('Content-Type', 'application/json'); 
-    xhr.onload = () => { 
+    xhr.onload = () => {
       if (xhr.status < 200 || xhr.status >= 300) {
         reject(xhr);
       } else {
@@ -32,9 +33,9 @@ function updateTimelog(data) {
 
 function deleteTimelog() {
   return new Promise((resolve, reject) => {
-    let xhr = new XMLHttpRequest(); 
+    let xhr = new XMLHttpRequest();
     xhr.open('DELETE', '/timelog', true); 
-    xhr.onload = () => { 
+    xhr.onload = () => {
       if (xhr.status < 200 || xhr.status >= 300) {
         reject(xhr);
       } else {
@@ -45,10 +46,4 @@ function deleteTimelog() {
   });
 }
 
-// module.exports = {
-//   get: getTimelog,
-//   update: updateTimelog,
-//   delete: deleteTimelog
-// }
-
-export {getTimelog, updateTimelog, deleteTimelog}
+export { getTimelog, updateTimelog, deleteTimelog }

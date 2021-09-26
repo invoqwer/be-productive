@@ -1,5 +1,3 @@
-// Private
-
 // zero pad to 2 digits
 function zeroPad(num) {
   return num < 10 ? `0${num}` : num;
@@ -17,7 +15,6 @@ function changeTimezone(date, ianatz) {
 }
 
 // Deltas
-
 function getDelta(start, end) {
   let delta = Math.abs(start - end) / 1000;
 
@@ -95,6 +92,7 @@ function formatMonth(month) {
   }
 }
 
+// date: JS Date Object
 function formatDate(date) {
   const year = date.getFullYear();
   const month = formatMonth(date.getMonth());
@@ -113,19 +111,4 @@ function formatTime(date, includeSeconds = false) {
     `${hours.num}:${minutes} ${hours.meridiem}`;
 }
 
-// module.exports = {
-//   delta: {
-//     get: getDelta,
-//     format: formatDelta,
-//     aggregate: aggregateDeltas
-//   },
-//   format: {
-//     hours: formatHours,
-//     weekday: formatWeekday,
-//     month: formatMonth,
-//     date: formatDate,
-//     time: formatTime
-//   }
-// }
-
-export {getDelta, formatDelta, aggregateDeltas,formatDate, formatTime}
+export { getDelta, formatDelta, aggregateDeltas, formatDate, formatTime }

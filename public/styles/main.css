@@ -136,10 +136,24 @@ body {
   flex: 1 1 auto;
 }
 
+.dayAggregate {
+  background-color: var(--day-aggregate-color);
+}
+
 .aggregate {
-  background-color: var(--aggregate-color);
+  text-align: center;
+  color: var(--font-color);
+  background-color: var(--clock-color);
 }
 
 .accent {
   color: var(--accent-color);
+}
+
+.dayAddIntervalWrapper {
+  display: none;
+}
+
+.showAddInterval {
+  background-color: var(--accent-color);
 }
