@@ -18,7 +18,7 @@ body {
 }
 
 #modal {
-  border: 2px solid var(--border-color);
+  border: 0.1em solid var(--border-color);
   font-size: 2em;
   background-color: var(--modal-color);
   margin: 25vh auto 0;
@@ -51,18 +51,26 @@ body {
   width: 100%;
 }
 
-#delete {
+.btn {
   text-align: center;
   font-size: 2.5vw;
   float: right;
   height: 4vw;
   width: 4vw;
-  background-color: var(--delete-color);
   cursor: pointer;
+  border: 0.1em solid var(--border-color);
+}
+
+#delete {
+  background-color: var(--delete-color);
+}
+
+#addInterval {
+  background-color: var(--start-time-color);
 }
 
 #clock-wrapper {
-  border: 2px solid var(--border-color);
+  border: 0.1em solid var(--border-color);
   margin: 10vh auto;
   width: 70%;
 }
@@ -74,6 +82,11 @@ body {
 
 #clock {
   background: var(--clock-color);
+}
+
+#info {
+  color: #63758f;
+  font-size: 1em;
 }
 
 #date {
@@ -119,7 +132,7 @@ body {
   font-size: 1.5em;
   font-weight: bold;
   padding: 1vh;
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 0.1em solid var(--border-color);
 }
 
 .log-entry {
@@ -129,7 +142,7 @@ body {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 0.1em solid var(--border-color);
 }
 
 .log-entry>* {
@@ -150,10 +163,10 @@ body {
   color: var(--accent-color);
 }
 
-.dayAddIntervalWrapper {
-  display: none;
-}
-
-.showAddInterval {
-  background-color: var(--accent-color);
+#addIntervalWrapper input, #addIntervalWrapper button {
+  font-size: 1.5em;
+  margin: 2vh;
+  border: none;
+  color: var(--font-color);
+  background-color: var(--day-aggregate-color);
 }

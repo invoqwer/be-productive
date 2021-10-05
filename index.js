@@ -56,17 +56,17 @@ app.post('/timelog', (req, res) => {
         timelog[date].unshift(interval);
         updateTimelog = true;
         break;
-      // ensure: b <= c && d <= e
-      } else if (i > 0 && i < intervals.length - 1 &&
-        start >= intervals[i-1][1] &&
-        end <= intervals[i][0]) {
-        timelog[date].splice(i, 0, interval);
-        updateTimelog = true;
-        break;
       // case: inserting interval at the tail
       } else if (i == intervals.length - 1 &&
         start >= intervals[i][1]) {
         timelog[date].push(interval);
+        updateTimelog = true;
+        break;
+      // Regular insertion. ensure: b <= c && d <= e
+      } else if (i > 0 && i < intervals.length &&
+        start >= intervals[i-1][1] &&
+        end <= intervals[i][0]) {
+        timelog[date].splice(i, 0, interval);
         updateTimelog = true;
         break;
       }

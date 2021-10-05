@@ -92,13 +92,20 @@ function formatMonth(month) {
   }
 }
 
-// date: JS Date Object
 function formatDate(date) {
   const year = date.getFullYear();
   const month = formatMonth(date.getMonth());
   const day = date.getDate();
   const weekday = formatWeekday(date.getDay());
   return `${weekday} ${month}.${day} ${year}`;
+}
+
+// return: yyyy-mm-dd
+function formatDateYMD(date) {
+  const year = date.getFullYear();
+  const month = zeroPad(date.getMonth()+1);
+  const day = zeroPad(date.getDate());
+  return `${year}-${month}-${day}`;
 }
 
 function formatTime(date, includeSeconds = false) {
@@ -111,4 +118,4 @@ function formatTime(date, includeSeconds = false) {
     `${hours.num}:${minutes} ${hours.meridiem}`;
 }
 
-export { getDelta, formatDelta, aggregateDeltas, formatDate, formatTime }
+export { getDelta, formatDelta, aggregateDeltas, formatDate, formatDateYMD, formatTime }

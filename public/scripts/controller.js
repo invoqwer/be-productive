@@ -1,5 +1,5 @@
 import {
-  getDelta, formatDelta, aggregateDeltas, formatDate, formatTime
+  getDelta, formatDelta, aggregateDeltas, formatDate, formatDateYMD, formatTime
 } from './time.js';
 
 import {
@@ -14,8 +14,7 @@ getTimelog().then(res => {
 });
 
 function addIntervalToTimelog(interval) {
-  log('Adding interval:');
-  log(interval);
+  log(`Adding interval: ${interval}`);
   updateTimelog(interval).then(res => {
     populateTimelog(res);
   });
@@ -37,41 +36,55 @@ function populateTimelog(data) {
 
   let deltas = [];
 
+  // Add Interval
+  let addIntervalWrapper = document.createElement('div');
+  addIntervalWrapper.id = 'addIntervalWrapper';
+  addIntervalWrapper.classList.add('day');
+  addIntervalWrapper.style.display = 'none';
+  let dateIntervalInput = document.createElement('input');
+  dateIntervalInput.setAttribute('type', 'date');
+  dateIntervalInput.value = formatDateYMD(new Date());
+  let startIntervalInput = document.createElement('input');
+  startIntervalInput.setAttribute('type', 'time');
+  startIntervalInput.required = true;
+  let endIntervalInput = document.createElement('input');
+  endIntervalInput.setAttribute('type', 'time');
+  endIntervalInput.required = true;
+  let submitInterval = document.createElement('button');
+  submitInterval.innerText = 'Add Interval';
+  submitInterval.addEventListener('click', function() {
+    let [y, m, s] = dateIntervalInput.value.split('-');
+    let [sh, ss] = startIntervalInput.value.split(':');
+    let [eh, es] = endIntervalInput.value.split(':');
+    log(y, m, s, sh, ss, eh, es);
+    // months are 0-based
+    addIntervalToTimelog({
+      date: new Date(y, m-1, s),
+      interval: [
+        new Date(y, m-1, s, sh, ss),
+        new Date(y, m-1, s, eh, es)
+      ]
+    });
+  });
+  addIntervalWrapper.appendChild(dateIntervalInput);
+  addIntervalWrapper.appendChild(startIntervalInput);
+  addIntervalWrapper.appendChild(endIntervalInput);
+  addIntervalWrapper.appendChild(submitInterval);
+  tl.appendChild(addIntervalWrapper);
+
   for (const [date, intervals] of Object.entries(data)) {
     let day = document.createElement('div');
     day.classList.add('day');
     
+    // Days
     let dayHeader = document.createElement('div');
     dayHeader.classList.add('logHeader');
-    dayHeader.innerText = date;
+    dayHeader.innerText = formatDate(new Date(date));
     day.appendChild(dayHeader);
-
-    let dateClass = date.replace(/\s/g, '-');
-    let dayAddIntervalWrapper = document.createElement('div');
-    dayAddIntervalWrapper.classList.add('log-entry', 'dayAddIntervalWrapper', dateClass);
-    let addStartInterval = document.createElement('input');
-    let addEndInterval = document.createElement('input');
-    let submitInterval = document.createElement('input');
-    submitInterval.style.type = 'submit';
-    submitInterval.addEventListener('submit', function() {
-      log('asdf');
-    });
-    dayAddIntervalWrapper.appendChild(addStartInterval);
-    dayAddIntervalWrapper.appendChild(addEndInterval);
-    dayAddIntervalWrapper.appendChild(submitInterval);
-    day.appendChild(dayAddIntervalWrapper);
-
-    let showAddInterval = document.createElement('div');
-    showAddInterval.classList.add('logHeader');
-    showAddInterval.innerText = '+';
-    showAddInterval.addEventListener('click', function() {
-      const dayAddIntervalWrapper = document.getElementsByClassName(dateClass);
-      dayAddIntervalWrapper[0].style.display = 'block';
-    });
-    // day.appendChild(showAddInterval);
 
     let dayDeltas = [];
 
+    // Intervals
     intervals.forEach(interval => {
       const [start, end] =
         [new Date(interval[0]), new Date(interval[1])];
@@ -96,7 +109,7 @@ function populateTimelog(data) {
       day.appendChild(entry);
     });
 
-    // total time across all intervals for the day
+    // Day Aggregate
     let dayAggregate = document.createElement('div');
     dayAggregate.classList.add('logHeader', 'dayAggregate');
 
@@ -110,7 +123,7 @@ function populateTimelog(data) {
     tl.appendChild(day);
   }
 
-  // total time across all days
+  // Total Aggregate
   if (Object.keys(data).length > 0) {
     let aggregate = document.createElement('div');
     aggregate.classList.add('logHeader', 'aggregate');
@@ -147,9 +160,11 @@ storage.removeItem('target');
 function updateView() {
   now = new Date();
   const date = formatDate(now);
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const time = formatTime(now);
 
-  document.getElementById('date').innerText = date;
+  document.getElementById('info').innerText = timezone;
+  document.getElementById('date').innerText = `${date} - ${now.toLocaleDateString()}`;
   document.getElementById('time').innerText = time;
   
   if (isRecording) {
@@ -187,7 +202,7 @@ function endRecording() {
     log('End recording');
 
     addIntervalToTimelog({
-      date: formatDate(now),
+      date: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
       interval: [start, now]
     });
 
@@ -225,6 +240,15 @@ function handleKeypress(e) {
       break;
   }
 }
+
+// Show add interval UI
+document.getElementById('addInterval').addEventListener('click',
+  () => {
+    addIntervalWrapper.style.display =
+      (addIntervalWrapper.style.display === 'none') ?
+        'block' :
+        'none';
+  });
 
 // Modals
 function isModal() {

@@ -10,7 +10,8 @@
 - run `nohup node index.js >/dev/null 2>&1 &` to run in the background
 
 ## TODO
-- pure JS time + date picker modal
+- ES6 + add linter
+- Remove pug -> just regular html
 - clean up hacky modal logic
 - UI feedback on handle invalid interval post
 - UI: add interval + delete interval buttons

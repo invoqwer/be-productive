@@ -14,7 +14,11 @@ function getTimelog() {
   });
 }
 
-// data format: see formatDate(<Date Object>)
+// data format:
+// {
+//   date: formatDate(<Date>),
+//   interval: [start <Date>, end <Date>]
+// }
 function updateTimelog(data) {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest(); 
