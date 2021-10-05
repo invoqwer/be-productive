@@ -11,7 +11,6 @@
 
 ## TODO
 - ES6 + add linter
-- Remove pug -> just regular html
 - clean up hacky modal logic
 - UI feedback on handle invalid interval post
 - UI: add interval + delete interval buttons
