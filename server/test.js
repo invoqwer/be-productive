@@ -1,3 +1,13 @@
+import express from 'express';
+import path from 'path';
+
+const app = express();
+const __dirname = path.normalize(path.resolve('../client'));
+console.log('asdf')
+console.log(__dirname)
+// console.log(__filename)
+
+
 // TODO: how to import?
 
 // import {
@@ -93,4 +103,4 @@ function formatDelta(delta) {
   const ad = [delta1, delta2, delta3]
   log(aggregateDeltas(ad));
   log(formatDelta(aggregateDeltas(ad)));
-})();
+});

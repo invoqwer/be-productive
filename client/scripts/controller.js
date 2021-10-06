@@ -1,63 +1,75 @@
 import {
-  getDelta, formatDelta, aggregateDeltas, formatDate, formatDateYMD, formatTime
+  getDelta,
+  formatDelta,
+  aggregateDeltas,
+  formatDate,
+  formatDateYMD,
+  formatTime,
 } from './time.js';
 
 import {
-  getTimelog, updateTimelog, deleteTimelog
+  getTimelog,
+  updateTimelog,
+  deleteTimelog,
 } from './timelog.js';
 
 const log = console.log;
 
 // Update Views via AJAX Requests
-getTimelog().then(res => {
+getTimelog().then((res) => {
   populateTimelog(res);
 });
 
-function postToTimelog(req) {
+const postToTimelog = (req) => {
   log(req);
   updateTimelog(req)
-    .then(res => {
-      populateTimelog(res);
-    }).catch(e => {
-      alert(`${e.statusText} ${e.status}: ${e.response}`);
-    });
-}
+      .then((res) => populateTimelog(res))
+      .catch((e) =>
+        alert(`${e.statusText} ${e.status}: ${e.response}`));
+};
 
-function clearTimelog() {
+const clearTimelog = () => {
   log('Clearing timelog');
   storage.removeItem('target');
-  deleteTimelog().then(res => {
-    populateTimelog(res);
-  })
-}
+  deleteTimelog().then((res) => populateTimelog(res));
+};
 
 // Populate Timelog from JSON
 function populateTimelog(data) {
   const tl = document.getElementById('timelog-wrapper');
+  const deltas = [];
   tl.innerHTML = '';
 
-  let deltas = [];
-
   // Add Interval
-  let addIntervalWrapper = document.createElement('div');
+  const [
+    addIntervalWrapper,
+    dateIntervalInput,
+    startIntervalInput,
+    endIntervalInput,
+    submitInterval,
+  ] =
+  [
+    document.createElement('div'),
+    document.createElement('input'),
+    document.createElement('input'),
+    document.createElement('input'),
+    document.createElement('button'),
+  ];
+
   addIntervalWrapper.id = 'addIntervalWrapper';
   addIntervalWrapper.classList.add('day');
   addIntervalWrapper.style.display = 'none';
-  let dateIntervalInput = document.createElement('input');
   dateIntervalInput.setAttribute('type', 'date');
   dateIntervalInput.value = formatDateYMD(new Date());
-  let startIntervalInput = document.createElement('input');
   startIntervalInput.setAttribute('type', 'time');
   startIntervalInput.required = true;
-  let endIntervalInput = document.createElement('input');
   endIntervalInput.setAttribute('type', 'time');
   endIntervalInput.required = true;
-  let submitInterval = document.createElement('button');
   submitInterval.innerText = 'Add Interval';
-  submitInterval.addEventListener('click', function() {
-    let [y, m, s] = dateIntervalInput.value.split('-');
-    let [sh, ss] = startIntervalInput.value.split(':');
-    let [eh, es] = endIntervalInput.value.split(':');
+  submitInterval.addEventListener('click', () => {
+    const [y, m, s] = dateIntervalInput.value.split('-');
+    const [sh, ss] = startIntervalInput.value.split(':');
+    const [eh, es] = endIntervalInput.value.split(':');
     log(y, m, s, sh, ss, eh, es);
     // months are 0-based
     postToTimelog({
@@ -65,8 +77,8 @@ function populateTimelog(data) {
       date: new Date(y, m-1, s),
       interval: [
         new Date(y, m-1, s, sh, ss),
-        new Date(y, m-1, s, eh, es)
-      ]
+        new Date(y, m-1, s, eh, es),
+      ],
     });
   });
   addIntervalWrapper.appendChild(dateIntervalInput);
@@ -76,29 +88,30 @@ function populateTimelog(data) {
   tl.appendChild(addIntervalWrapper);
 
   for (const [date, intervals] of Object.entries(data)) {
-    let day = document.createElement('div');
+    const day = document.createElement('div');
     day.classList.add('day');
-    
+
     // Days
-    let dayHeader = document.createElement('div');
+    const dayHeader = document.createElement('div');
     dayHeader.classList.add('logHeader');
     dayHeader.innerText = formatDate(new Date(date));
     day.appendChild(dayHeader);
 
-    let dayDeltas = [];
+    const dayDeltas = [];
 
     // Intervals
-    intervals.forEach(interval => {
+    intervals.forEach((interval) => {
       const [start, end] =
         [new Date(interval[0]), new Date(interval[1])];
       const delta = getDelta(start, end);
       dayDeltas.push(delta);
 
-      let [left, middle, right, entry] =
-        [document.createElement('div'),
-         document.createElement('div'),
-         document.createElement('div'),
-         document.createElement('div')];
+      const [left, middle, right, entry] = [
+        document.createElement('div'),
+        document.createElement('div'),
+        document.createElement('div'),
+        document.createElement('div'),
+      ];
 
       right.classList.add('accent');
       right.style.cursor = 'pointer';
@@ -109,7 +122,7 @@ function populateTimelog(data) {
         postToTimelog({
           action: 'DEL',
           date: date,
-          interval: interval
+          interval: interval,
         });
       });
 
@@ -121,10 +134,10 @@ function populateTimelog(data) {
     });
 
     // Day Aggregate
-    let dayAggregate = document.createElement('div');
+    const dayAggregate = document.createElement('div');
     dayAggregate.classList.add('logHeader', 'dayAggregate');
 
-    let dayAggregateDelta = aggregateDeltas(dayDeltas);
+    const dayAggregateDelta = aggregateDeltas(dayDeltas);
     deltas.push(dayAggregateDelta);
     dayAggregate.innerText = `Day: ${formatDelta(dayAggregateDelta)}`;
     day.appendChild(dayAggregate);
@@ -134,7 +147,7 @@ function populateTimelog(data) {
 
   // Total Aggregate
   if (Object.keys(data).length > 0) {
-    let aggregate = document.createElement('div');
+    const aggregate = document.createElement('div');
     aggregate.classList.add('logHeader', 'aggregate');
 
     aggregate.innerText = `Total: ${
@@ -145,28 +158,30 @@ function populateTimelog(data) {
   }
 }
 
-function clearLocalStorage() {
+// eslint-disable-next-line
+const clearLocalStorage = () => {
   storage.removeItem('start');
   storage.removeItem('isRecording');
   storage.removeItem('target');
-}
+};
 
 // Update Time + Local Storage
-function parseLocalStorage() {
+const parseLocalStorage = () => {
   let start = storage.getItem('start');
   let isRecording = storage.getItem('isRecording');
   start = start ? new Date(start) : null;
   isRecording = (isRecording === 'true') ? true : false;
   return [start, isRecording];
-}
+};
 
 const storage = window.localStorage;
 // clearLocalStorage();
-let now, delta;
+let now;
+let delta;
 let [start, isRecording] = parseLocalStorage();
 storage.removeItem('target');
 
-function updateView() {
+const updateView = () => {
   now = new Date();
   const date = formatDate(now);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -176,26 +191,26 @@ function updateView() {
     `${now.toLocaleString()} - ${timezone}`;
   document.getElementById('date').innerText = date;
   document.getElementById('time').innerText = time;
-  
+
   if (isRecording) {
     delta = getDelta(start, now);
     document.getElementById('start-time').innerHTML = formatTime(start);
     document.getElementById('current-time').innerHTML = formatDelta(delta);
   }
-}
+};
 setInterval(updateView, 1000);
 
 // Recording
-function startRecording() {
+const startRecording = () => {
   if (!isRecording && now) {
     log('Start recording');
     isRecording = true, start = now;
     storage.setItem('isRecording', true);
     storage.setItem('start', now);
   }
-}
+};
 
-function cancelRecording() {
+const cancelRecording = () => {
   if (isRecording) {
     log('Cancel recording');
 
@@ -205,16 +220,16 @@ function cancelRecording() {
     storage.setItem('isRecording', false);
     storage.removeItem('start');
   }
-}
+};
 
-function endRecording() {
+const endRecording = () => {
   if (isRecording && start && now) {
     log('End recording');
 
     postToTimelog({
       action: 'ADD',
       date: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
-      interval: [start, now]
+      interval: [start, now],
     });
 
     document.getElementById('start-time').innerHTML = '';
@@ -223,18 +238,16 @@ function endRecording() {
     storage.setItem('isRecording', false);
     storage.removeItem('start');
   }
-}
+};
 
 // Event listeners
 // Key Press
-document.addEventListener('keypress', handleKeypress);
-function handleKeypress(e) {
-  // log(e.keyCode);
-  switch(e.keyCode) {
+document.addEventListener('keypress', (e) => {
+  switch (e.key) {
     // s - start
-    case 115: startRecording(); break;
+    case 's': startRecording(); break;
     // c - cancel
-    case 99:
+    case 'c':
       if (isModal()) {
         hideModal();
       } else if (isRecording) {
@@ -242,7 +255,7 @@ function handleKeypress(e) {
       }
       break;
     // enter - end
-    case 13:
+    case 'Enter':
       if (isModal()) {
         acceptModal();
       } else {
@@ -250,62 +263,57 @@ function handleKeypress(e) {
       }
       break;
   }
-}
+});
 
 // Show add interval UI
-document.getElementById('addInterval').addEventListener('click',
-  () => {
-    addIntervalWrapper.style.display =
-      (addIntervalWrapper.style.display === 'none') ?
-        'block' :
-        'none';
-  });
+document.getElementById('addInterval')
+    .addEventListener('click', () => {
+      const wrapper = document.getElementById('addIntervalWrapper');
+      wrapper.style.display =
+        (wrapper.style.display === 'none') ?
+          'block' :
+          'none';
+    });
 
 // Modals
-function isModal() {
-  return document.getElementById('overlay').style.display === "block";
-}
+const isModal = () => {
+  return document.getElementById('overlay').style.display === 'block';
+};
 
-function showModal(id) {
+const showModal = (id) => {
   storage.setItem('target', id);
-  document.getElementById('overlay').style.display = "block";
-}
+  document.getElementById('overlay').style.display = 'block';
+};
 
-function hideModal() {
-  document.getElementById('overlay').style.display = "none";
+const hideModal = () => {
+  document.getElementById('overlay').style.display = 'none';
   storage.removeItem('target');
-}
+};
 
-function acceptModal() {
-  switch(storage.getItem('target')) {
+const acceptModal = () => {
+  switch (storage.getItem('target')) {
     case 'delete': clearTimelog(); break;
     case 'cancel': cancelRecording(); break;
     default: log('Error accepting modal'); break;
   }
   hideModal();
-}
+};
 
-document.getElementById('cancel').addEventListener('click', function() {
-  hideModal();
-});
+document.getElementById('cancel')
+    .addEventListener('click', () => hideModal());
 
-document.getElementById('accept').addEventListener('click', function() {
-  acceptModal();
-});
+document.getElementById('accept')
+    .addEventListener('click', () => acceptModal());
 
-document.getElementById('delete').addEventListener('click', function() {
-  showModal('delete');
-});
+document.getElementById('delete')
+    .addEventListener('click', () => showModal('delete'));
 
 // different colors based on window focus
-function setStyle(sheet) {
-  document.getElementById('colors').setAttribute('href', sheet);  
-}
+const setStyle = (sheet) =>
+  document.getElementById('colors').setAttribute('href', sheet);
 
-document.body.addEventListener('mouseleave', _ => {
-  setStyle('styles/colors-inactive.css');
-});
+document.body.addEventListener('mouseleave', () =>
+  setStyle('styles/colors-inactive.css'));
 
-document.body.addEventListener('mouseenter', _ => {
-  setStyle('styles/colors-active.css');
-});
+document.body.addEventListener('mouseenter', () =>
+  setStyle('styles/colors-active.css'));

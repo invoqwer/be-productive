@@ -1,14 +1,17 @@
-const express = require('express');
-const app = express();
-const fs = require('fs');
-const path = require('path');
+import express from 'express';
+import fs from 'fs';
+import path from 'path';
 
-app.use(express.static(path.join(__dirname, 'public')));
+// index.js should always be run from "npm run start"
+const app = express();
+const __root = path.resolve();
+
+app.use(express.static(path.join(__root, 'client')));
 app.use(express.json());
 
 const log = console.log;
 const port = process.env.port || 3000;
-const timelogPath = path.join(__dirname, 'timelog.json');
+const timelogPath = path.join(__root, 'server', 'timelog.json');
 
 function getTimelog() {
   // create an empty timelog, if no file exists
@@ -34,7 +37,7 @@ data format:
   date: <Date>,
   interval: [start <Date>, end <Date>]
 }
-*/ 
+*/
 const allowedActions = ['ADD', 'DEL'];
 app.post('/timelog', (req, res) => {
   const {action, date, interval} = req.body;
@@ -75,7 +78,8 @@ app.post('/timelog', (req, res) => {
     // invariant: at least one interval exists for the given day
     } else {
       // convert timestamps to date objects for comparison
-      const intervals = timelog[date].map(x => [new Date(x[0]), new Date(x[1])]);
+      const intervals = timelog[date].map((x) =>
+        [new Date(x[0]), new Date(x[1])]);
       const [start, end] = [new Date(interval[0]), new Date(interval[1])];
       // validate interval before appending
       for (let i = 0; i < intervals.length; i++) {

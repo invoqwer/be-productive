@@ -1,7 +1,7 @@
 // Ajax Requests
-function getTimelog() {
+const getTimelog = () => {
   return new Promise((resolve, reject) => {
-    let xhr = new XMLHttpRequest(); 
+    const xhr = new XMLHttpRequest();
     xhr.open('GET', '/timelog', true);
     xhr.onload = () => {
       if (xhr.status < 200 || xhr.status >= 300) {
@@ -9,40 +9,44 @@ function getTimelog() {
       } else {
         resolve(JSON.parse(xhr.response));
       }
-    }; 
-    xhr.send(); 
+    };
+    xhr.send();
   });
-}
+};
 
-function updateTimelog(data) {
+const updateTimelog = (data) => {
   return new Promise((resolve, reject) => {
-    let xhr = new XMLHttpRequest(); 
+    const xhr = new XMLHttpRequest();
     xhr.open('POST', '/timelog', true);
-    xhr.setRequestHeader('Content-Type', 'application/json'); 
+    xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = () => {
       if (xhr.status < 200 || xhr.status >= 300) {
         reject(xhr);
       } else {
         resolve(JSON.parse(xhr.response));
       }
-    }; 
-    xhr.send(JSON.stringify(data)); 
+    };
+    xhr.send(JSON.stringify(data));
   });
-}
+};
 
-function deleteTimelog() {
+const deleteTimelog = () => {
   return new Promise((resolve, reject) => {
-    let xhr = new XMLHttpRequest();
-    xhr.open('DELETE', '/timelog', true); 
+    const xhr = new XMLHttpRequest();
+    xhr.open('DELETE', '/timelog', true);
     xhr.onload = () => {
       if (xhr.status < 200 || xhr.status >= 300) {
         reject(xhr);
       } else {
         resolve(JSON.parse(xhr.response));
       }
-    }; 
-    xhr.send(null); 
+    };
+    xhr.send(null);
   });
-}
+};
 
-export { getTimelog, updateTimelog, deleteTimelog }
+export {
+  getTimelog,
+  updateTimelog,
+  deleteTimelog,
+};

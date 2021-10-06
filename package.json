@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "description": "Keep track of how you are spending your time",
   "main": "main.js",
+  "type": "module",
   "dependencies": {
     "express": "^4.16.3"
   },
   "scripts": {
+    "start": "node server/index.js",
+    "lint-server": "eslint server",
+    "lint-client": "eslint client/scripts",
+    "lint": "eslint server client/scripts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,5 +23,9 @@
   "bugs": {
     "url": "https://github.com/MarcusTan/Be-Productive/issues"
   },
-  "homepage": "https://github.com/MarcusTan/Be-Productive#readme"
+  "homepage": "https://github.com/MarcusTan/Be-Productive#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-google": "^0.14.0"
+  }
 }

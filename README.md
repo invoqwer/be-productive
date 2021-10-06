@@ -5,7 +5,7 @@
 - localstorage allows persistence while refreshing page
 
 ## Setup
-- `npm install`
+- `npm install` (need node version >= 13)
 - `node index.js`
 - run `nohup node index.js >/dev/null 2>&1 &` to run in the background
 
