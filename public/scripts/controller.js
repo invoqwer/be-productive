@@ -13,9 +13,20 @@ getTimelog().then(res => {
   populateTimelog(res);
 });
 
-function addIntervalToTimelog(interval) {
-  log(`Adding interval: ${interval}`);
-  updateTimelog(interval).then(res => {
+function addIntervalToTimelog(req) {
+  req.action = 'ADD';
+  log('Adding interval');
+  log(req);
+  updateTimelog(req).then(res => {
+    populateTimelog(res);
+  });
+}
+
+function deleteIntervalFromTimelog(req) {
+  req.action = 'DEL';
+  log('Deleting interval')
+  log(req)
+  updateTimelog(req).then(res => {
     populateTimelog(res);
   });
 }
@@ -29,7 +40,6 @@ function clearTimelog() {
 }
 
 // Populate Timelog from JSON
-// { "date": [ [start,end], [start,end] ... ], ... }
 function populateTimelog(data) {
   const tl = document.getElementById('timelog-wrapper');
   tl.innerHTML = '';
@@ -91,21 +101,28 @@ function populateTimelog(data) {
       const delta = getDelta(start, end);
       dayDeltas.push(delta);
 
-      let left = document.createElement('div');
-      let middle = document.createElement('div');
-      let right = document.createElement('div');
-      right.classList.add('accent');
+      let [left, middle, right, entry] =
+        [document.createElement('div'),
+         document.createElement('div'),
+         document.createElement('div'),
+         document.createElement('div')];
 
+      right.classList.add('accent');
+      right.style.cursor = 'pointer';
       left.innerText = formatTime(start, true);
       middle.innerText = formatTime(end, true);
       right.innerText = formatDelta(delta);
+      right.addEventListener('click', () => {
+        deleteIntervalFromTimelog({
+          date: date,
+          interval: interval
+        });
+      });
 
-      let entry = document.createElement('div');
+      [left, middle, right].forEach((e) => {
+        entry.appendChild(e);
+      });
       entry.classList.add('log-entry');
-      entry.appendChild(left);
-      entry.appendChild(middle);
-      entry.appendChild(right);
-
       day.appendChild(entry);
     });
 
@@ -115,9 +132,7 @@ function populateTimelog(data) {
 
     let dayAggregateDelta = aggregateDeltas(dayDeltas);
     deltas.push(dayAggregateDelta);
-    dayAggregate.innerText = `Day: ${
-      formatDelta(dayAggregateDelta)
-    }`;
+    dayAggregate.innerText = `Day: ${formatDelta(dayAggregateDelta)}`;
     day.appendChild(dayAggregate);
 
     tl.appendChild(day);
@@ -163,8 +178,9 @@ function updateView() {
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const time = formatTime(now);
 
-  document.getElementById('info').innerText = timezone;
-  document.getElementById('date').innerText = `${date} - ${now.toLocaleDateString()}`;
+  document.getElementById('info').innerText =
+    `${now.toLocaleString()} - ${timezone}`;
+  document.getElementById('date').innerText = date;
   document.getElementById('time').innerText = time;
   
   if (isRecording) {

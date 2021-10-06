@@ -53,12 +53,16 @@ body {
 
 .btn {
   text-align: center;
-  font-size: 2.5vw;
-  float: right;
-  height: 4vw;
-  width: 4vw;
   cursor: pointer;
   border: 0.1em solid var(--border-color);
+}
+
+.controlBtn {
+  padding-top: 0.2em;
+  font-size: 2em;
+  float: right;
+  height: 1.8em;
+  width: 2em;
 }
 
 #delete {
