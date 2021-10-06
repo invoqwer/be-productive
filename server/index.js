@@ -18,7 +18,19 @@ function getTimelog() {
   if (!fs.existsSync(timelogPath)) {
     fs.writeFileSync(timelogPath, JSON.stringify({}));
   }
-  return JSON.parse(fs.readFileSync(timelogPath));
+
+  const timelog = JSON.parse(fs.readFileSync(timelogPath));
+
+  // ordered by key => increasing date
+  const ordered = Object.keys(timelog).sort().reduce(
+      (obj, key) => {
+        obj[key] = timelog[key];
+        return obj;
+      },
+      {},
+  );
+
+  return ordered;
 }
 
 // routes
