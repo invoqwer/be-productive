@@ -13,22 +13,14 @@ getTimelog().then(res => {
   populateTimelog(res);
 });
 
-function addIntervalToTimelog(req) {
-  req.action = 'ADD';
-  log('Adding interval');
+function postToTimelog(req) {
   log(req);
-  updateTimelog(req).then(res => {
-    populateTimelog(res);
-  });
-}
-
-function deleteIntervalFromTimelog(req) {
-  req.action = 'DEL';
-  log('Deleting interval')
-  log(req)
-  updateTimelog(req).then(res => {
-    populateTimelog(res);
-  });
+  updateTimelog(req)
+    .then(res => {
+      populateTimelog(res);
+    }).catch(e => {
+      alert(`${e.statusText} ${e.status}: ${e.response}`);
+    });
 }
 
 function clearTimelog() {
@@ -68,7 +60,8 @@ function populateTimelog(data) {
     let [eh, es] = endIntervalInput.value.split(':');
     log(y, m, s, sh, ss, eh, es);
     // months are 0-based
-    addIntervalToTimelog({
+    postToTimelog({
+      action: 'ADD',
       date: new Date(y, m-1, s),
       interval: [
         new Date(y, m-1, s, sh, ss),
@@ -113,7 +106,8 @@ function populateTimelog(data) {
       middle.innerText = formatTime(end, true);
       right.innerText = formatDelta(delta);
       right.addEventListener('click', () => {
-        deleteIntervalFromTimelog({
+        postToTimelog({
+          action: 'DEL',
           date: date,
           interval: interval
         });
@@ -217,7 +211,8 @@ function endRecording() {
   if (isRecording && start && now) {
     log('End recording');
 
-    addIntervalToTimelog({
+    postToTimelog({
+      action: 'ADD',
       date: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
       interval: [start, now]
     });

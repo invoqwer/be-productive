@@ -11,14 +11,8 @@
 
 ## TODO
 - ES6 + add linter
-- clean up hacky modal logic
-- UI feedback on handle invalid interval post
-- UI: add interval + delete interval buttons
-- interval backing on google sheets
-- handle multi week
-
-- media queries / responsiveness
-- editable descriptions for each time interval
-- top navbar
 - remove express: use node native http
-- remove pug: write my own small templating engine (CSC324?)
+- clean up hacky modal logic
+- interval backing on google sheets
+- handle multi week?
+- editable descriptions for each time interval?

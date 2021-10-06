@@ -38,6 +38,7 @@ data format:
 const allowedActions = ['ADD', 'DEL'];
 app.post('/timelog', (req, res) => {
   const {action, date, interval} = req.body;
+  const errMsg = `Bad ${action} interval request`;
 
   if (!allowedActions.includes(action)) {
     res.json(timelog);
@@ -47,6 +48,7 @@ app.post('/timelog', (req, res) => {
 
   // delete the specific interval, if it exists
   if (action === 'DEL') {
+    let deleteInterval = false;
     for (const i in timelog[date]) {
       if (timelog[date][i][0] === interval[0] &&
           timelog[date][i][1] === interval[1]) {
@@ -54,10 +56,16 @@ app.post('/timelog', (req, res) => {
         if (timelog[date].length === 0) {
           delete timelog[date];
         }
-        fs.writeFileSync(timelogPath, JSON.stringify(timelog, null, 4));
+        deleteInterval = true;
+        break;
       }
     }
-    res.json(timelog);
+    if (deleteInterval === true) {
+      fs.writeFileSync(timelogPath, JSON.stringify(timelog, null, 4));
+      res.json(timelog);
+    } else {
+      res.status(500).send({msg: errMsg});
+    }
   } else if (action === 'ADD') {
     let addToTimelog = false;
     // case: no intervals exist for this day
@@ -101,8 +109,10 @@ app.post('/timelog', (req, res) => {
     }
     if (addToTimelog === true) {
       fs.writeFileSync(timelogPath, JSON.stringify(timelog, null, 4));
+      res.json(timelog);
+    } else {
+      res.status(500).send({msg: errMsg});
     }
-    res.json(timelog);
   }
 });
 
