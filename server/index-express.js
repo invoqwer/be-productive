@@ -1,15 +1,17 @@
+import express from 'express';
 import fs from 'fs';
-import http from 'http';
 import path from 'path';
 
 // index.js should always be run from "npm run start"
-// can also run from the top level dir: "node server/index.js"
+const app = express();
 const __root = path.resolve();
-const publicFolder = path.join(__root, 'client');
-const timelogPath = path.join(__root, 'server', 'timelog.json');
 
-// const log = console.log;
-const port = 3000;
+app.use(express.static(path.join(__root, 'client')));
+app.use(express.json());
+
+const log = console.log;
+const port = process.env.port || 3000;
+const timelogPath = path.join(__root, 'server', 'timelog.json');
 
 const getTimelog = () => {
   // create an empty timelog, if no file exists
@@ -31,47 +33,14 @@ const getTimelog = () => {
   return ordered;
 };
 
-const deleteTimelog = () => {
-  fs.writeFileSync(timelogPath, JSON.stringify({}));
-  return {};
-};
+// routes
+app.get('/', (_, res) => {
+  res.render('index');
+});
 
-const getHandler = (req, res) => {
-  switch (req.url) {
-    case '/timelog':
-      res.writeHead(200, {'Content-type': 'application/json'});
-      return res.end(JSON.stringify(getTimelog()));
-    default: {
-      // serving a public resource
-      const filePath = (req.url === '/') ?
-        path.join(publicFolder, 'index.html') :
-        path.join(publicFolder, req.url);
-      let contentType = 'text/html';
-      switch (path.extname(req.url)) {
-        case '.js':
-          contentType = 'text/javascript';
-          break;
-        case '.css':
-          contentType = 'text/css';
-          break;
-        case '.json':
-          contentType = 'application/json';
-          break;
-      }
-
-      fs.readFile(filePath, function(err, data) {
-        if (err) {
-          res.writeHead(404, {'Content-Type': contentType});
-          res.write('404: Not Found');
-        } else {
-          res.writeHead(200, {'Content-Type': contentType});
-          res.write(data);
-        }
-        return res.end();
-      });
-    }
-  }
-};
+app.get('/timelog', (_, res) => {
+  res.json(getTimelog());
+});
 
 /*
 data format:
@@ -81,22 +50,14 @@ data format:
   interval: [start <Date>, end <Date>]
 }
 */
-const handleTimelogPost = async (req, res) => {
-  const contentTypeHeader = {'Content-Type': 'application/json'};
+app.post('/timelog', (req, res) => {
   const allowedActions = ['ADD', 'DEL'];
-  const timelog = getTimelog();
-  // read request body
-  const buffers = [];
-  for await (const chunk of req) {
-    buffers.push(chunk);
-  }
-  const body = Buffer.concat(buffers).toString();
-  const {action, date, interval} = JSON.parse(body);
+  const {action, date, interval} = req.body;
   const errMsg = `Bad ${action} interval request`;
+  const timelog = getTimelog();
 
   if (!allowedActions.includes(action)) {
-    res.writeHead(200, contentTypeHeader);
-    return res.end(JSON.stringify(timelog));
+    res.json(timelog);
   }
 
   // delete the specific interval, if it exists
@@ -115,12 +76,9 @@ const handleTimelogPost = async (req, res) => {
     }
     if (deleteInterval === true) {
       fs.writeFileSync(timelogPath, JSON.stringify(timelog, null, 4));
-      res.writeHead(200, contentTypeHeader);
-      return res.end(JSON.stringify(timelog));
+      res.json(timelog);
     } else {
-      res.writeHead(500, {'Content-Type': 'text/html'});
-      res.write(errMsg);
-      return res.end();
+      res.status(500).send({msg: errMsg});
     }
   } else if (action === 'ADD') {
     let addToTimelog = false;
@@ -166,37 +124,18 @@ const handleTimelogPost = async (req, res) => {
     }
     if (addToTimelog === true) {
       fs.writeFileSync(timelogPath, JSON.stringify(timelog, null, 4));
-      res.writeHead(200, contentTypeHeader);
-      return res.end(JSON.stringify(timelog));
+      res.json(timelog);
     } else {
-      res.writeHead(500, {'Content-Type': 'text/html'});
-      res.write(errMsg);
-      return res.end();
+      res.status(500).send({msg: errMsg});
     }
-  }
-};
-
-const postHandler = async (req, res) => {
-  switch (req.url) {
-    case '/timelog':
-      return handleTimelogPost(req, res);
-  }
-};
-
-const deleteHandler = (req, res) => {
-  switch (req.url) {
-    case '/timelog':
-      res.writeHead(200, {'Content-type': 'application/json'});
-      return res.end(JSON.stringify(deleteTimelog()));
-  }
-};
-
-const server = http.createServer(async (req, res) => {
-  switch (req.method) {
-    case 'GET': return getHandler(req, res);
-    case 'POST': return postHandler(req, res);
-    case 'DELETE': return deleteHandler(req, res);
   }
 });
 
-server.listen(port);
+app.delete('/timelog', (_, res) => {
+  fs.writeFileSync(timelogPath, JSON.stringify({}));
+  res.json({});
+});
+
+app.listen(port, () => {
+  log(`be productive => http://127.0.0.1:${port}`);
+});

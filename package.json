@@ -4,9 +4,7 @@
   "description": "Keep track of how you are spending your time",
   "main": "main.js",
   "type": "module",
-  "dependencies": {
-    "express": "^4.16.3"
-  },
+  "dependencies": {},
   "scripts": {
     "start": "node server/index.js",
     "lint-server": "eslint server",
