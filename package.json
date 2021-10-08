@@ -7,9 +7,9 @@
   "dependencies": {},
   "scripts": {
     "start": "node server/index.js",
-    "lint-server": "eslint server",
-    "lint-client": "eslint client/scripts",
-    "lint": "eslint server client/scripts",
+    "lint-server": "eslint server --fix",
+    "lint-client": "eslint client/scripts --fix",
+    "lint": "eslint server client/scripts --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -1,4 +1,4 @@
-import fs from 'fs';
+import {readFile, stat, writeFile} from 'fs/promises';
 import http from 'http';
 import path from 'path';
 
@@ -9,66 +9,90 @@ const publicFolder = path.join(__root, 'client');
 const timelogPath = path.join(__root, 'server', 'timelog.json');
 
 // const log = console.log;
+const log = console.log;
 const port = 3000;
+const emptyRes = {};
 
-const getTimelog = () => {
-  // create an empty timelog, if no file exists
-  if (!fs.existsSync(timelogPath)) {
-    fs.writeFileSync(timelogPath, JSON.stringify({}));
+const getTimelog = async () => {
+  try {
+    await stat(timelogPath);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return await initializeTimelog();
+    } else {
+      log(err);
+    }
   }
 
-  const timelog = JSON.parse(fs.readFileSync(timelogPath));
+  try {
+    const timelog = JSON.parse(await readFile(timelogPath));
+    // ordered by key => increasing date
+    const ordered = Object.keys(timelog)
+        .sort()
+        .reduce(
+            (obj, key) => {
+              obj[key] = timelog[key];
+              return obj;
+            },
+            {},
+        );
 
-  // ordered by key => increasing date
-  const ordered = Object.keys(timelog).sort().reduce(
-      (obj, key) => {
-        obj[key] = timelog[key];
-        return obj;
-      },
-      {},
-  );
-
-  return ordered;
+    return ordered;
+  } catch (err) {
+    log(err);
+    return emptyRes;
+  }
 };
 
-const deleteTimelog = () => {
-  fs.writeFileSync(timelogPath, JSON.stringify({}));
-  return {};
+const initializeTimelog = async () => {
+  try {
+    await writeFile(timelogPath, JSON.stringify(emptyRes));
+  } catch (err) {
+    log(err);
+  }
+  return emptyRes;
 };
 
-const getHandler = (req, res) => {
-  switch (req.url) {
-    case '/timelog':
+const getHandler = async (req, res) => {
+  if (req.url === '/timelog') {
+    try {
+      const timelog = await getTimelog();
       res.writeHead(200, {'Content-type': 'application/json'});
-      return res.end(JSON.stringify(getTimelog()));
-    default: {
-      // serving a public resource
-      const filePath = (req.url === '/') ?
-        path.join(publicFolder, 'index.html') :
-        path.join(publicFolder, req.url);
-      let contentType = 'text/html';
-      switch (path.extname(req.url)) {
-        case '.js':
-          contentType = 'text/javascript';
-          break;
-        case '.css':
-          contentType = 'text/css';
-          break;
-        case '.json':
-          contentType = 'application/json';
-          break;
-      }
+      res.end(JSON.stringify(timelog));
+    } catch (err) {
+      res.writeHead(500, {'Content-Type': 'text/html'});
+      res.end(err.toString());
+    }
+  } else {
+    // serving a public resource
+    const filePath = (req.url === '/') ?
+      path.join(publicFolder, 'index.html') :
+      path.join(publicFolder, req.url);
 
-      fs.readFile(filePath, function(err, data) {
-        if (err) {
-          res.writeHead(404, {'Content-Type': contentType});
-          res.write('404: Not Found');
-        } else {
-          res.writeHead(200, {'Content-Type': contentType});
-          res.write(data);
-        }
-        return res.end();
-      });
+    let contentType = 'text/html';
+    switch (path.extname(req.url)) {
+      case '.js':
+        contentType = 'text/javascript';
+        break;
+      case '.css':
+        contentType = 'text/css';
+        break;
+      case '.json':
+        contentType = 'application/json';
+        break;
+    }
+
+    try {
+      const data = await readFile(filePath);
+      res.writeHead(200, {'Content-Type': contentType});
+      res.end(data);
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        res.writeHead(404, {'Content-Type': 'text/html'});
+      } else {
+        res.writeHead(500, {'Content-Type': 'text/html'});
+      }
+      res.end(err.toString());
     }
   }
 };
@@ -84,7 +108,7 @@ data format:
 const handleTimelogPost = async (req, res) => {
   const contentTypeHeader = {'Content-Type': 'application/json'};
   const allowedActions = ['ADD', 'DEL'];
-  const timelog = getTimelog();
+  const timelog = await getTimelog();
   // read request body
   const buffers = [];
   for await (const chunk of req) {
@@ -96,7 +120,7 @@ const handleTimelogPost = async (req, res) => {
 
   if (!allowedActions.includes(action)) {
     res.writeHead(200, contentTypeHeader);
-    return res.end(JSON.stringify(timelog));
+    res.end(JSON.stringify(timelog));
   }
 
   // delete the specific interval, if it exists
@@ -114,13 +138,12 @@ const handleTimelogPost = async (req, res) => {
       }
     }
     if (deleteInterval === true) {
-      fs.writeFileSync(timelogPath, JSON.stringify(timelog, null, 4));
+      await writeFile(timelogPath, JSON.stringify(timelog, null, 4));
       res.writeHead(200, contentTypeHeader);
-      return res.end(JSON.stringify(timelog));
+      res.end(JSON.stringify(timelog));
     } else {
       res.writeHead(500, {'Content-Type': 'text/html'});
-      res.write(errMsg);
-      return res.end();
+      res.end(errMsg);
     }
   } else if (action === 'ADD') {
     let addToTimelog = false;
@@ -165,13 +188,12 @@ const handleTimelogPost = async (req, res) => {
       }
     }
     if (addToTimelog === true) {
-      fs.writeFileSync(timelogPath, JSON.stringify(timelog, null, 4));
+      await writeFile(timelogPath, JSON.stringify(timelog, null, 4));
       res.writeHead(200, contentTypeHeader);
-      return res.end(JSON.stringify(timelog));
+      res.end(JSON.stringify(timelog));
     } else {
       res.writeHead(500, {'Content-Type': 'text/html'});
-      res.write(errMsg);
-      return res.end();
+      res.end(errMsg);
     }
   }
 };
@@ -183,11 +205,17 @@ const postHandler = async (req, res) => {
   }
 };
 
-const deleteHandler = (req, res) => {
+const deleteHandler = async (req, res) => {
   switch (req.url) {
     case '/timelog':
-      res.writeHead(200, {'Content-type': 'application/json'});
-      return res.end(JSON.stringify(deleteTimelog()));
+      try {
+        const timelog = await initializeTimelog();
+        res.writeHead(200, {'Content-type': 'application/json'});
+        return res.end(JSON.stringify(timelog));
+      } catch (err) {
+        res.writeHead(500, {'Content-type': 'text/html'});
+        return res.end(err.toString());
+      }
   }
 };
 
